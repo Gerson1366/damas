@@ -1,51 +1,42 @@
 package damas;
+import java.util.Scanner;
 
 public class Main {
 
 	public static void main(String[] args) {
-		Pos b2;
-		// TODO Auto-generated method stub
-		String pos_sup[];
-		String pos_inf[];
-		Pos[][] posicoes = new Pos[8][8];
-		for(int x=0;x<8;x++) {
-			for(int i=0;i<8;i++) {
-				String posx = Integer.toString(x+1);
-				String posi = "a";
-				if(i==0) {
-					posi="a";
+		int brancas = 12;
+		int pretas = 12;
+		String posicaoPeca;
+		String posicaoMovimento;
+		Scanner scanner = new Scanner(System.in);
+		Tabuleiro tab = new Tabuleiro();
+		do {
+			tab.ImprimirTabuleiro();
+			System.out.println("Qual peça branca deseja mover?(yx)");
+			posicaoPeca = scanner.nextLine();
+			int i = tab.recuperaValor(posicaoPeca.charAt(0));
+			int j = Integer.parseInt(String.valueOf(posicaoPeca.charAt(1)))-1;
+			if(i>=0 && i<=7) {
+				if(j>=0 && j<=7) {
+					if(tab.posicoes[i][j].isOcupado()==true) {
+						if(tab.posicoes[i][j].getPeca().getCor()=="b") {
+							System.out.println("Deseja mover a peça para qual posição?(yx)");
+							posicaoMovimento = scanner.nextLine();
+							int y = tab.recuperaValor(posicaoMovimento.charAt(0));
+							int x = Integer.parseInt(String.valueOf(posicaoMovimento.charAt(1)))-1;
+							if(x>=0 && x<=7) {
+								if(y>=0 && y<=7) {
+									System.out.println("Movimento "+tab.posicoes[i][j].getPos()+" para "+tab.posicoes[y][x].getPos());
+									tab.posicoes[y][x].setPeca(tab.posicoes[i][j].getPeca());
+									tab.posicoes[y][x].setOcupado(true);
+									tab.posicoes[i][j].setPeca(null);
+									tab.posicoes[i][j].setOcupado(false);
+								}
+							}
+						}
+					}
 				}
-				if(i==1) {
-					posi="b";
-				}
-				if(i==2) {
-					posi="c";
-				}
-				if(i==3) {
-					posi="d";
-				}
-				if(i==4) {
-					posi="e";
-				}
-				if(i==5) {
-					posi="f";
-				}
-				if(i==6) {
-					posi="g";
-				}
-				if(i==7) {
-					posi="h";
-				}
-				//pos_sup[0] = "a3";
-				//pos_sup[1] = "c3";
-				//pos_inf[0] = "a1";
-				//pos_inf[1] = "c1";
-				Pos pos = new Pos();
-				pos.pos = posi+posx;
-				posicoes[i][x]=pos;
 			}
-		}
-		System.out.println("Posição: "+posicoes[2][5].pos);
+		}while(brancas>0 && pretas>0);
 	}
-
 }
