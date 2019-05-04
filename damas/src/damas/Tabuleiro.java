@@ -1,11 +1,19 @@
 package damas;
 
+import java.util.Scanner;
+
 public class Tabuleiro {
 	
 	Pos b2;
 	String pos_sup[];
 	String pos_inf[];
 	Pos[][] posicoes = new Pos[8][8];
+	int brancas = 12;
+	int pretas = 12;
+	String posicaoPeca;
+	String posicaoMovimento;
+	String turno="b";
+	String oponente="p";
 	
 	public Tabuleiro() {
 		for(int x=0;x<8;x++) {
@@ -138,6 +146,163 @@ public class Tabuleiro {
 			return 7;
 		}else {
 			return 8;
+		}
+	}
+	
+	public void moverPeca() {
+		Scanner scanner = new Scanner(System.in);
+		if(this.turno=="b") {
+			System.out.println("Qual peça branca deseja mover?(yx)");
+		}else if(this.turno=="p") {
+			System.out.println("Qual peça preta deseja mover?(yx)");
+		}
+		posicaoPeca = scanner.nextLine();
+		//Pega valor da String e separa primeiro valor do segundo, convertendo cada valor para int
+		int i = this.recuperaValor(posicaoPeca.charAt(0));
+		int j = Integer.parseInt(String.valueOf(posicaoPeca.charAt(1)))-1;
+		//Testa se valor está dentro do tabuleiro
+		if(i>=0 && i<=7) {
+			if(j>=0 && j<=7) {
+				//Testa se existe peça na posição de peça que vai mover
+				if(this.posicoes[i][j].isOcupado()==true) {
+					//Testa se a peça ocupadando o espaço é a peça do jogador
+					if(this.posicoes[i][j].getPeca().getCor()==this.turno) {
+						System.out.println("Deseja mover a peça para qual posição?(yx)");
+						//Pega o valor do tabuleiro para onde vai mover a peça
+						posicaoMovimento = scanner.nextLine();
+						//Converte valores para int
+						int y = this.recuperaValor(posicaoMovimento.charAt(0));
+						int x = Integer.parseInt(String.valueOf(posicaoMovimento.charAt(1)))-1;
+						//Testa se posição para mover a peça está dentro do tabuleiro
+						if(x>=0 && x<=7) {
+							if(y>=0 && y<=7) {
+								//Testa se posição para mover a peça é uma linha acima da peça atual
+								if(turno=="b") {
+									this.moverBranca(i,j,y,x);
+								}else if(turno=="p") {
+									this.moverPreta(i,j,y,x);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	public void moverPreta(int i,int j,int y,int x) {
+		if(y==(i+1)) {
+			//Testa se posição para mover a peça é uma linha à esquerda ou direita da posição atual
+			if((x==(j-1)) || (x==(j+1))) {
+				//Testa se não há outra peça no lugar
+				if(this.posicoes[y][x].isOcupado()==true) {
+					//Testa se a peça ocupando o espaço é oponente
+					if(this.posicoes[y][x].getPeca().getCor()=="b") {
+						//Testa se posição acima da peça é dentro do tabuleiro
+						if(y+1<=7) {
+							//Testa se movimento foi à esquerda
+							if(x==(j-1)) {
+								//Testa se movimento está dentro do tabuleiro
+								if(j-2>=0) {
+									//Testa se posição acima da peça é ocupada
+									if(this.posicoes[i+2][j-2].isOcupado()==false) {
+										this.posicoes[i+2][j-2].setPeca(this.posicoes[i][j].getPeca());
+										this.posicoes[i+2][j-2].setOcupado(true);
+										this.posicoes[i+1][j-1].setOcupado(false);
+										this.posicoes[i+1][j-1].setPeca(null);
+										this.posicoes[i][j].setPeca(null);
+										this.posicoes[i][j].setOcupado(false);
+										this.brancas--;
+										this.turno="b";
+										this.oponente="p";
+									}
+								}
+							}else if(x==(j+1)) {
+							//Testa se movimento foi à direita
+								if(j+2<=7) {
+									//Testa se posição acima da peça é ocupada
+									if(this.posicoes[i+2][j+2].isOcupado()==false) {
+										this.posicoes[i+2][j+2].setPeca(this.posicoes[i][j].getPeca());
+										this.posicoes[i+2][j+2].setOcupado(true);
+										this.posicoes[i+1][j+1].setOcupado(false);
+										this.posicoes[i+1][j+1].setPeca(null);
+										this.posicoes[i][j].setPeca(null);
+										this.posicoes[i][j].setOcupado(false);
+										this.brancas--;
+										this.turno="b";
+										this.oponente="p";
+									}
+								}
+							}
+						}
+					}
+				}else {
+					//Move a peça para a posição
+					System.out.println("Movimento "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
+					this.posicoes[y][x].setPeca(this.posicoes[i][j].getPeca());
+					this.posicoes[y][x].setOcupado(true);
+					this.posicoes[i][j].setPeca(null);
+					this.posicoes[i][j].setOcupado(false);
+					this.turno="b";
+					this.oponente="p";
+				}
+			}
+		}
+	}
+	
+	public void moverBranca(int i,int j,int y,int x) {
+		if(y==(i-1)) {
+			//Testa se posição para mover a peça é uma linha à esquerda ou direita da posição atual
+			if((x==(j-1)) || (x==(j+1))) {
+				//Testa se não há outra peça no lugar
+				if(this.posicoes[y][x].isOcupado()==true) {
+					//Testa se a peça ocupando o espaço é oponente
+					if(this.posicoes[y][x].getPeca().getCor()=="p") {
+						//Testa se posição acima da peça é dentro do tabuleiro
+						if(y-1>=0) {
+							//Testa se movimento foi à esquerda
+							if(x==(j-1)) {
+								//Testa se movimento está dentro do tabuleiro
+								if(j-2>=0) {
+									//Testa se posição acima da peça é ocupada
+									if(this.posicoes[i-1][j-1].isOcupado()==false) {
+										this.posicoes[i][j].setOcupado(false);
+										this.posicoes[i][j].setPeca(null);
+										this.posicoes[i-1][j-1].setPeca(this.posicoes[i][j].getPeca());
+										this.posicoes[i-1][j-1].setOcupado(true);
+										this.pretas--;
+										this.turno="p";
+										this.oponente="b";
+									}
+								}
+							}else if(x==(j+1)) {
+							//Testa se movimento foi à direita
+								if(j+2<=7) {
+									//Testa se posição acima da peça é ocupada
+									if(this.posicoes[i-1][j+1].isOcupado()==false) {
+										this.posicoes[i][j].setOcupado(false);
+										this.posicoes[i][j].setPeca(null);
+										this.posicoes[i-1][j+1].setPeca(this.posicoes[i][j].getPeca());
+										this.posicoes[i-1][j+1].setOcupado(true);
+										this.pretas--;
+										this.turno="p";
+										this.oponente="b";
+									}
+								}
+							}
+						}
+					}
+				}else {
+					//Move a peça para a posição
+					System.out.println("Movimento "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
+					this.posicoes[y][x].setPeca(this.posicoes[i][j].getPeca());
+					this.posicoes[y][x].setOcupado(true);
+					this.posicoes[i][j].setPeca(null);
+					this.posicoes[i][j].setOcupado(false);
+					this.turno="p";
+					this.oponente="b";
+				}
+			}
 		}
 	}
 }
