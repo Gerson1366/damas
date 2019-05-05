@@ -1,7 +1,6 @@
 package damas;
 
 import java.util.Scanner;
-
 public class Tabuleiro {
 	
 	Pos b2;
@@ -14,6 +13,7 @@ public class Tabuleiro {
 	String posicaoMovimento;
 	String turno="b";
 	String oponente="p";
+	private Pos pecaMatar=null;
 	
 	public Tabuleiro() {
 		for(int x=0;x<8;x++) {
@@ -98,7 +98,11 @@ public class Tabuleiro {
 				if(posicoes[i][j].isOcupado()==false) {
 					System.out.print("  ");
 				}else{
-					System.out.print(posicoes[i][j].getPeca().getCor() + " ");
+					if(posicoes[i][j].getPeca().isDama()) {
+						System.out.print(posicoes[i][j].getPeca().getCor().toUpperCase() + " ");
+					}else {
+						System.out.print(posicoes[i][j].getPeca().getCor() + " ");
+					}
 				}
 			}
 			System.out.println("y");
@@ -149,6 +153,15 @@ public class Tabuleiro {
 		}
 	}
 	
+	public static boolean isInteger(String str) { 
+	  try {  
+	    Integer.parseInt(str);  
+	    return true;
+	  } catch(NumberFormatException e){  
+	    return false;  
+	  }  
+	}
+	
 	public void moverPeca() {
 		Scanner scanner = new Scanner(System.in);
 		if(this.turno=="b") {
@@ -157,30 +170,42 @@ public class Tabuleiro {
 			System.out.println("Qual peça preta deseja mover?(yx)");
 		}
 		posicaoPeca = scanner.nextLine();
-		//Pega valor da String e separa primeiro valor do segundo, convertendo cada valor para int
-		int i = this.recuperaValor(posicaoPeca.charAt(0));
-		int j = Integer.parseInt(String.valueOf(posicaoPeca.charAt(1)))-1;
-		//Testa se valor está dentro do tabuleiro
-		if(i>=0 && i<=7) {
-			if(j>=0 && j<=7) {
-				//Testa se existe peça na posição de peça que vai mover
-				if(this.posicoes[i][j].isOcupado()==true) {
-					//Testa se a peça ocupadando o espaço é a peça do jogador
-					if(this.posicoes[i][j].getPeca().getCor()==this.turno) {
-						System.out.println("Deseja mover a peça para qual posição?(yx)");
-						//Pega o valor do tabuleiro para onde vai mover a peça
-						posicaoMovimento = scanner.nextLine();
-						//Converte valores para int
-						int y = this.recuperaValor(posicaoMovimento.charAt(0));
-						int x = Integer.parseInt(String.valueOf(posicaoMovimento.charAt(1)))-1;
-						//Testa se posição para mover a peça está dentro do tabuleiro
-						if(x>=0 && x<=7) {
-							if(y>=0 && y<=7) {
-								//Testa se posição para mover a peça é uma linha acima da peça atual
-								if(turno=="b") {
-									this.moverBranca(i,j,y,x);
-								}else if(turno=="p") {
-									this.moverPreta(i,j,y,x);
+		if(posicaoPeca.length()>1) {
+			//Pega valor da String e separa primeiro valor do segundo, convertendo cada valor para int
+			int i = this.recuperaValor(posicaoPeca.charAt(0));
+			if(this.isInteger(String.valueOf(posicaoPeca.charAt(1)))){
+				int j = Integer.parseInt(String.valueOf(posicaoPeca.charAt(1)))-1;
+				//Testa se valor está dentro do tabuleiro
+				if(i>=0 && i<=7) {
+					if(j>=0 && j<=7) {
+						//Testa se existe peça na posição de peça que vai mover
+						if(this.posicoes[i][j].isOcupado()==true) {
+							//Testa se a peça ocupadando o espaço é a peça do jogador
+							if(this.posicoes[i][j].getPeca().getCor()==this.turno) {
+								System.out.println("Deseja mover a peça para qual posição?(yx)");
+								//Pega o valor do tabuleiro para onde vai mover a peça
+								posicaoMovimento = scanner.nextLine();
+								//Converte valores para int
+								if(posicaoMovimento.length()>1) {
+									int y = this.recuperaValor(posicaoMovimento.charAt(0));
+									if(this.isInteger(String.valueOf(posicaoMovimento.charAt(1)))){
+										int x = Integer.parseInt(String.valueOf(posicaoMovimento.charAt(1)))-1;
+										//Testa se posição para mover a peça está dentro do tabuleiro
+										if(x>=0 && x<=7) {
+											if(y>=0 && y<=7) {
+												//Testa se posição para mover a peça é uma linha acima da peça atual
+												if(this.posicoes[i][j].getPeca().isDama()) {
+													this.moverDama(i,j,y,x);
+												}else {
+													if(turno=="b") {
+														this.moverBranca(i,j,y,x);
+													}else if(turno=="p") {
+														this.moverPreta(i,j,y,x);
+													}
+												}
+											}
+										}
+									}
 								}
 							}
 						}
@@ -190,7 +215,161 @@ public class Tabuleiro {
 		}
 	}
 	
+	public void moverDama(int i,int j,int y,int x) {
+		String oponente;
+		if(this.buscarCaminho(i,j,y,x)) {
+			if(this.pecaMatar!=null) {
+				this.pecaMatar.getPeca().setViva(false);
+				this.pecaMatar.setPeca(null);
+				this.pecaMatar.setOcupado(false);
+				this.pecaMatar = null;
+				if(this.oponente=="p") {
+					pretas--;
+				}else {
+					brancas--;
+				}
+			}
+			this.posicoes[y][x].setPeca(this.posicoes[i][j].getPeca());
+			this.posicoes[y][x].setOcupado(true);
+			this.posicoes[i][j].setPeca(null);
+			this.posicoes[i][j].setOcupado(false);
+			oponente = this.oponente;
+			this.oponente = this.turno;
+			this.turno=oponente;
+		}
+	}
+	
+	public boolean buscarCaminho(int i,int j,int y,int x) {
+		int pecas=0;
+		boolean caminho = false;
+		//i e j valor inicial. y e x valor para mover
+		//Testa se movimento foi para a esquerda
+		if(y<i) {
+			//Testa se movimento foi para cima
+			if(x<j) {
+				do {
+					j--;
+					i--;
+					if(this.posicoes[i][j].isOcupado()) {
+						if(this.posicoes[i][j].getPeca().getCor()==this.turno) {
+							pecas=2;
+						}else {
+							this.pecaMatar = this.posicoes[i][j];
+							pecas++;
+						}
+					}
+					if(j==x && i==y) {
+						if(!this.posicoes[i][j].isOcupado()) {
+							caminho=true;
+						}
+					}
+				}while(x<j && y<i && pecas<2);
+				if(pecas<2 && caminho==true) {
+					return true;
+				}else {
+					return false;
+				}
+			//Testa se movimento foi para baixo
+			}else if(x>j) {
+				do {
+					j++;
+					i--;
+					if(this.posicoes[i][j].isOcupado()) {
+						if(this.posicoes[i][j].getPeca().getCor()==this.turno) {
+							pecas=2;
+						}else {
+							this.pecaMatar = this.posicoes[i][j];
+							pecas++;
+						}
+					}
+					if(j==x && i==y) {
+						if(!this.posicoes[i][j].isOcupado()) {
+							caminho=true;
+						}
+					}
+				}while(x>j && y<i && pecas<2);
+				if(pecas<2 && caminho==true) {
+					return true;
+				}else {
+					return false;
+				}
+			}else {
+				//Caso movimento seja na mesma coluna da origem
+				return false;
+			}
+		//Testa se movimento foi para a direita
+		}else if(y>i) {
+			//Testa se movimento foi para cima
+			if(x<j) {
+				do {
+					j--;
+					i++;
+					if(this.posicoes[i][j].isOcupado()) {
+						if(this.posicoes[i][j].getPeca().getCor()==this.turno) {
+							pecas=2;
+						}else {
+							this.pecaMatar = this.posicoes[i][j];
+							pecas++;
+						}
+					}
+					if(j==x && i==y) {
+						if(!this.posicoes[i][j].isOcupado()) {
+							caminho=true;
+						}
+					}
+				}while(x<j && y>i && pecas<2);
+				if(pecas<2 && caminho==true) {
+					return true;
+				}else {
+					return false;
+				}
+			//Testa se movimento foi para baixo
+			}else if(x>j) {
+				do {
+					j++;
+					i++;
+					if(this.posicoes[i][j].isOcupado()) {
+						if(this.posicoes[i][j].getPeca().getCor()==this.turno) {
+							pecas=2;
+						}else {
+							this.pecaMatar = this.posicoes[i][j];
+							pecas++;
+						}
+					}
+					if(j==x && i==y) {
+						if(!this.posicoes[i][j].isOcupado()) {
+							caminho=true;
+						}
+					}
+				}while(x>j && y>i && pecas<2);
+				if(pecas<2 && caminho==true) {
+					return true;
+				}else {
+					return false;
+				}
+			}else {
+				//Se movimento for na mesma coluna da origem
+				return true;
+			}
+		}else {
+			//Se valor para mover é na mesma linha que posicão original
+			return false;
+		}
+	}
+	
 	public void moverPreta(int i,int j,int y,int x) {
+		//Para arrumar caso jogue após a peça que vai pegar
+		if(x<j) {
+			if(y-i==2 && j-x==2) {
+				y--;
+				x++;
+			}
+		}else {
+			if(y-i==2 && x-j==2) {
+				y--;
+				x--;
+			}
+		}
 		if(y==(i+1)) {
 			//Testa se posição para mover a peça é uma linha à esquerda ou direita da posição atual
 			if((x==(j-1)) || (x==(j+1))) {
@@ -208,6 +387,10 @@ public class Tabuleiro {
 									if(this.posicoes[i+2][j-2].isOcupado()==false) {
 										this.posicoes[i+2][j-2].setPeca(this.posicoes[i][j].getPeca());
 										this.posicoes[i+2][j-2].setOcupado(true);
+										if((i+2)==7) {
+											this.posicoes[i+2][j-2].getPeca().setDama(true);
+										}
+										this.posicoes[i+1][j-1].getPeca().setViva(false);
 										this.posicoes[i+1][j-1].setOcupado(false);
 										this.posicoes[i+1][j-1].setPeca(null);
 										this.posicoes[i][j].setPeca(null);
@@ -224,6 +407,10 @@ public class Tabuleiro {
 									if(this.posicoes[i+2][j+2].isOcupado()==false) {
 										this.posicoes[i+2][j+2].setPeca(this.posicoes[i][j].getPeca());
 										this.posicoes[i+2][j+2].setOcupado(true);
+										if((i+2)==7) {
+											this.posicoes[i+2][j+2].getPeca().setDama(true);
+										}
+										this.posicoes[i+1][j+1].getPeca().setViva(false);
 										this.posicoes[i+1][j+1].setOcupado(false);
 										this.posicoes[i+1][j+1].setPeca(null);
 										this.posicoes[i][j].setPeca(null);
@@ -241,6 +428,9 @@ public class Tabuleiro {
 					System.out.println("Movimento "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
 					this.posicoes[y][x].setPeca(this.posicoes[i][j].getPeca());
 					this.posicoes[y][x].setOcupado(true);
+					if(y==7) {
+						this.posicoes[y][x].getPeca().setDama(true);
+					}
 					this.posicoes[i][j].setPeca(null);
 					this.posicoes[i][j].setOcupado(false);
 					this.turno="b";
@@ -251,6 +441,18 @@ public class Tabuleiro {
 	}
 	
 	public void moverBranca(int i,int j,int y,int x) {
+		//Para arrumar caso jogue após a peça que vai pegar
+		if(x<j) {
+			if(i-y==2 && j-x==2) {
+				y++;
+				x++;
+			}
+		}else {
+			if(i-y==2 && x-j==2) {
+				y++;
+				x--;
+			}
+		}
 		if(y==(i-1)) {
 			//Testa se posição para mover a peça é uma linha à esquerda ou direita da posição atual
 			if((x==(j-1)) || (x==(j+1))) {
@@ -265,11 +467,17 @@ public class Tabuleiro {
 								//Testa se movimento está dentro do tabuleiro
 								if(j-2>=0) {
 									//Testa se posição acima da peça é ocupada
-									if(this.posicoes[i-1][j-1].isOcupado()==false) {
+									if(this.posicoes[i-2][j-2].isOcupado()==false) {
+										this.posicoes[i-2][j-2].setPeca(this.posicoes[i][j].getPeca());
+										this.posicoes[i-2][j-2].setOcupado(true);
+										if((i-2)==0) {
+											this.posicoes[i-2][j-2].getPeca().setDama(true);
+										}
+										this.posicoes[i-1][j-1].getPeca().setViva(false);
+										this.posicoes[i-1][j-1].setPeca(null);
+										this.posicoes[i-1][j-1].setOcupado(false);
 										this.posicoes[i][j].setOcupado(false);
 										this.posicoes[i][j].setPeca(null);
-										this.posicoes[i-1][j-1].setPeca(this.posicoes[i][j].getPeca());
-										this.posicoes[i-1][j-1].setOcupado(true);
 										this.pretas--;
 										this.turno="p";
 										this.oponente="b";
@@ -279,11 +487,17 @@ public class Tabuleiro {
 							//Testa se movimento foi à direita
 								if(j+2<=7) {
 									//Testa se posição acima da peça é ocupada
-									if(this.posicoes[i-1][j+1].isOcupado()==false) {
+									if(this.posicoes[i-2][j+2].isOcupado()==false) {
+										this.posicoes[i-2][j+2].setPeca(this.posicoes[i][j].getPeca());
+										this.posicoes[i-2][j+2].setOcupado(true);
+										if((i-2)==0) {
+											this.posicoes[i-2][j+2].getPeca().setDama(true);
+										}
+										this.posicoes[i-1][j+1].getPeca().setViva(false);
+										this.posicoes[i-1][j+1].setPeca(null);
+										this.posicoes[i-1][j+1].setOcupado(false);
 										this.posicoes[i][j].setOcupado(false);
 										this.posicoes[i][j].setPeca(null);
-										this.posicoes[i-1][j+1].setPeca(this.posicoes[i][j].getPeca());
-										this.posicoes[i-1][j+1].setOcupado(true);
 										this.pretas--;
 										this.turno="p";
 										this.oponente="b";
@@ -297,6 +511,9 @@ public class Tabuleiro {
 					System.out.println("Movimento "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
 					this.posicoes[y][x].setPeca(this.posicoes[i][j].getPeca());
 					this.posicoes[y][x].setOcupado(true);
+					if(y==0) {
+						this.posicoes[y][x].getPeca().setDama(true);
+					}
 					this.posicoes[i][j].setPeca(null);
 					this.posicoes[i][j].setOcupado(false);
 					this.turno="p";
