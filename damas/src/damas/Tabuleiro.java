@@ -1,5 +1,6 @@
 package damas;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 public class Tabuleiro {
 	
@@ -14,6 +15,7 @@ public class Tabuleiro {
 	String turno="b";
 	String oponente="p";
 	private Pos pecaMatar=null;
+	ArrayList<Peca> pecasPretas = new ArrayList<Peca>();
 	
 	public Tabuleiro() {
 		for(int x=0;x<8;x++) {
@@ -28,8 +30,11 @@ public class Tabuleiro {
 					if(x % 2 == 0) {
 						Peca peca = new Peca();
 						peca.setCor("p");
+						peca.setPos_x(x);
+						peca.setPos_y(i);
 						pos.setOcupado(true);
 						pos.setPeca(peca);
+						pecasPretas.add(peca);
 					}else {
 						pos.setOcupado(false);
 					}
@@ -37,8 +42,11 @@ public class Tabuleiro {
 					if(x % 2 != 0) {
 						Peca peca = new Peca();
 						peca.setCor("p");
+						peca.setPos_x(x);
+						peca.setPos_y(i);
 						pos.setOcupado(true);
 						pos.setPeca(peca);
+						pecasPretas.add(peca);
 					}else {
 						pos.setOcupado(false);
 					}
@@ -46,8 +54,11 @@ public class Tabuleiro {
 					if(x % 2 == 0) {
 						Peca peca = new Peca();
 						peca.setCor("p");
+						peca.setPos_x(x);
+						peca.setPos_y(i);
 						pos.setOcupado(true);
 						pos.setPeca(peca);
+						pecasPretas.add(peca);
 					}else {
 						pos.setOcupado(false);
 					}
@@ -56,6 +67,8 @@ public class Tabuleiro {
 					if(x % 2 != 0) {
 						Peca peca = new Peca();
 						peca.setCor("b");
+						peca.setPos_x(x);
+						peca.setPos_y(i);
 						pos.setOcupado(true);
 						pos.setPeca(peca);
 					}else {
@@ -66,6 +79,8 @@ public class Tabuleiro {
 					if(x % 2 == 0) {
 						Peca peca = new Peca();
 						peca.setCor("b");
+						peca.setPos_x(x);
+						peca.setPos_y(i);
 						pos.setOcupado(true);
 						pos.setPeca(peca);
 					}else {
@@ -75,6 +90,8 @@ public class Tabuleiro {
 					if(x % 2 != 0) {
 						Peca peca = new Peca();
 						peca.setCor("b");
+						peca.setPos_x(x);
+						peca.setPos_y(i);
 						pos.setOcupado(true);
 						pos.setPeca(peca);
 					}else {
@@ -233,6 +250,8 @@ public class Tabuleiro {
 			this.posicoes[y][x].setOcupado(true);
 			this.posicoes[i][j].setPeca(null);
 			this.posicoes[i][j].setOcupado(false);
+			this.posicoes[y][x].getPeca().setPos_x(x);
+			this.posicoes[y][x].getPeca().setPos_y(y);
 			oponente = this.oponente;
 			this.oponente = this.turno;
 			this.turno=oponente;
@@ -387,6 +406,8 @@ public class Tabuleiro {
 									if(this.posicoes[i+2][j-2].isOcupado()==false) {
 										this.posicoes[i+2][j-2].setPeca(this.posicoes[i][j].getPeca());
 										this.posicoes[i+2][j-2].setOcupado(true);
+										this.posicoes[i+2][j-2].getPeca().setPos_x(j-2);
+										this.posicoes[i+2][j-2].getPeca().setPos_y(i+2);
 										if((i+2)==7) {
 											this.posicoes[i+2][j-2].getPeca().setDama(true);
 										}
@@ -407,6 +428,8 @@ public class Tabuleiro {
 									if(this.posicoes[i+2][j+2].isOcupado()==false) {
 										this.posicoes[i+2][j+2].setPeca(this.posicoes[i][j].getPeca());
 										this.posicoes[i+2][j+2].setOcupado(true);
+										this.posicoes[i+2][j+2].getPeca().setPos_x(j+2);
+										this.posicoes[i+2][j+2].getPeca().setPos_y(i+2);
 										if((i+2)==7) {
 											this.posicoes[i+2][j+2].getPeca().setDama(true);
 										}
@@ -428,6 +451,8 @@ public class Tabuleiro {
 					System.out.println("Movimento "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
 					this.posicoes[y][x].setPeca(this.posicoes[i][j].getPeca());
 					this.posicoes[y][x].setOcupado(true);
+					this.posicoes[y][x].getPeca().setPos_x(x);
+					this.posicoes[y][x].getPeca().setPos_y(y);
 					if(y==7) {
 						this.posicoes[y][x].getPeca().setDama(true);
 					}
