@@ -1,21 +1,25 @@
 package damas;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 public class Tabuleiro {
 	
-	Pos b2;
-	String pos_sup[];
-	String pos_inf[];
-	Pos[][] posicoes = new Pos[8][8];
-	int brancas = 12;
-	int pretas = 12;
-	String posicaoPeca;
-	String posicaoMovimento;
-	String turno="b";
-	String oponente="p";
+	private Pos b2;
+	private String pos_sup[];
+	private String pos_inf[];
+	private Pos[][] posicoes = new Pos[8][8];
+	private int brancas = 12;
+	private int pretas = 12;
+	private String posicaoPeca;
+	private String posicaoMovimento;
+	private String turno="b";
+	private String oponente="p";
 	private Pos pecaMatar=null;
-	ArrayList<Peca> pecasPretas = new ArrayList<Peca>();
+	private ArrayList<Peca> pecasPretas = new ArrayList<Peca>();
+	private boolean desiste = false;
+	private String winner;
+	private String loser;
 	
 	public Tabuleiro() {
 		for(int x=0;x<8;x++) {
@@ -179,6 +183,198 @@ public class Tabuleiro {
 	  }  
 	}
 	
+	public boolean moveDamaUpEsq(int y1, int x1,int y2,int x2) {
+		while(x2>0 && y2>0) {
+			y2 = y2-1;
+			x2 = x2-1;
+		}
+		while(x2<x1 && y2<y1) {
+			if(this.moverDama(y1,x1,y2,x2)) {
+				return true;
+			}else {
+				y2++;
+				x2++;
+			}
+		}
+		return false;
+	}
+	
+	public boolean moveDamaUpDir(int y1, int x1,int y2,int x2) {
+		while(x2<7 && y2>0) {
+			y2 = y2-1;
+			x2 = x2+1;
+		}
+		while(x2>x1 && y2<y1) {
+			if(this.moverDama(y1,x1,y2,x2)) {
+				return true;
+			}else {
+				y2++;
+				x2--;
+			}
+		}
+		return false;
+	}
+	
+	public boolean moveDamaDownDir(int y1, int x1,int y2,int x2) {
+		while(x2<7 && y2<7) {
+			y2 = y2+1;
+			x2 = x2+1;
+		}
+		while(x2>x1 && y2>y1) {
+			if(this.moverDama(y1,x1,y2,x2)) {
+				return true;
+			}else {
+				y2--;
+				x2--;
+			}
+		}
+		return false;
+	}
+	
+	public boolean moveDamaDownEsq(int y1, int x1,int y2,int x2) {
+		while(x2>0 && y2<7) {
+			y2 = y2+1;
+			x2 = x2-1;
+		}
+		while(x2<x1 && y2>y1) {
+			if(this.moverDama(y1,x1,y2,x2)) {
+				return true;
+			}else {
+				y2--;
+				x2++;
+			}
+		}
+		return false;
+	}
+	
+	public void cpuMove() {
+		ArrayList<Peca> listaPecas = new ArrayList<Peca>();
+		listaPecas = (ArrayList<Peca>) pecasPretas.clone();
+		Random rand = new Random(); 
+		int randInt;
+		int sideInt;
+		boolean move = false;
+		System.out.println("Oponente está pensando...");
+		while(listaPecas.size()>0 && move==false) {
+			System.out.println("Size: "+listaPecas.size());
+			randInt = rand.nextInt(listaPecas.size());
+			Peca pecaCPU = listaPecas.get(randInt);
+			if(pecaCPU.isViva()) {
+				if(pecaCPU.isDama()) {
+					sideInt = rand.nextInt(4);
+					int x1 = pecaCPU.getPos_x();
+					int y1 = pecaCPU.getPos_y();
+					int x2 = x1;
+					int y2 = y1;
+					if(sideInt==0) {
+						if(this.moveDamaDownDir(y1, x1, y2, x2)) {
+							move=true;
+						}else if(this.moveDamaDownEsq(y1, x1, y2, x2)) {
+							move=true;
+						}else if(this.moveDamaUpDir(y1, x1, y2, x2)) {
+							move=true;
+						}else if(this.moveDamaUpEsq(y1, x1, y2, x2)) {
+							move = true;
+						}else {
+							listaPecas.remove(randInt);
+						}
+					}else if(sideInt==1) {
+						if(this.moveDamaDownEsq(y1, x1, y2, x2)) {
+							move=true;
+						}else if(this.moveDamaDownDir(y1, x1, y2, x2)) {
+							move=true;
+						}else if(this.moveDamaUpEsq(y1, x1, y2, x2)) {
+							move=true;
+						}else if(this.moveDamaUpDir(y1, x1, y2, x2)) {
+							move = true;
+						}else {
+							listaPecas.remove(randInt);
+						}
+					}else if(sideInt==2) {
+						if(this.moveDamaUpDir(y1, x1, y2, x2)) {
+							move=true;
+						}else if(this.moveDamaUpEsq(y1, x1, y2, x2)) {
+							move=true;
+						}else if(this.moveDamaDownDir(y1, x1, y2, x2)) {
+							move=true;
+						}else if(this.moveDamaDownEsq(y1, x1, y2, x2)) {
+							move = true;
+						}else {
+							listaPecas.remove(randInt);
+						}
+					}else {
+						if(this.moveDamaUpEsq(y1, x1, y2, x2)) {
+							move=true;
+						}else if(this.moveDamaUpDir(y1, x1, y2, x2)) {
+							move=true;
+						}else if(this.moveDamaDownEsq(y1, x1, y2, x2)) {
+							move=true;
+						}else if(this.moveDamaDownDir(y1, x1, y2, x2)) {
+							move = true;
+						}else {
+							listaPecas.remove(randInt);
+						}
+					}
+				}else {
+					sideInt = rand.nextInt(2);
+					if(sideInt==0) {
+						int x1 = pecaCPU.getPos_x();
+						int x2 = x1-1;
+						int y1 = pecaCPU.getPos_y();
+						int y2 = y1+1;
+						if((x2>=0 && x2<=7)&& (y2>=0 && y2<=7)) {
+							if(this.moverPreta(y1,x1,y2,x2)) {
+								move=true;
+							}else {
+								x1 = pecaCPU.getPos_x();
+								x2 = x1+1;
+								y1 = pecaCPU.getPos_y();
+								y2 = y1+1;
+								if((x2>=0 && x2<=7)&& (y2>=0 && y2<=7)) {
+									if(this.moverPreta(y1, x1, y2, x2)) {
+										move=true;
+									}else {
+										listaPecas.remove(randInt);
+									}
+								}
+							}
+						}
+					}else {
+						int x1 = pecaCPU.getPos_x();
+						int x2 = x1+1;
+						int y1 = pecaCPU.getPos_y();
+						int y2 = y1+1;
+						if((x2>=0 && x2<=7)&& (y2>=0 && y2<=7)) {
+							if(this.moverPreta(y1, x1, y2, x2)) {
+								move=true;
+							}else {
+								x1 = pecaCPU.getPos_x();
+								x2 = x1-1;
+								y1 = pecaCPU.getPos_y();
+								y2 = y1+1;
+								//Testa se valor está dentro do tabuleiro
+								if((x2>=0 && x2<=7)&& (y2>=0 && y2<=7)) {
+									if(this.moverPreta(y1, x1, y2, x2)) {
+										move=true;
+									}else {
+										listaPecas.remove(randInt);
+									}
+								}
+							}
+						}
+					}
+				}
+			}else {
+				listaPecas.remove(randInt);
+			}
+		}
+		if(move==false) {
+			this.desiste=true;
+			this.winner="b";
+			this.loser="p";
+		}
+	}
+	
 	public void moverPeca() {
 		Scanner scanner = new Scanner(System.in);
 		if(this.turno=="b") {
@@ -232,18 +428,29 @@ public class Tabuleiro {
 		}
 	}
 	
-	public void moverDama(int i,int j,int y,int x) {
+	public boolean moverDama(int i,int j,int y,int x) {
 		String oponente;
 		if(this.buscarCaminho(i,j,y,x)) {
 			if(this.pecaMatar!=null) {
 				this.pecaMatar.getPeca().setViva(false);
 				this.pecaMatar.setPeca(null);
 				this.pecaMatar.setOcupado(false);
+				if(this.turno=="b") {
+					System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos()+" Destruiu: "+this.pecaMatar.getPos());
+				}else {
+					System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos()+" Destruiu: "+this.pecaMatar.getPos());
+				}
 				this.pecaMatar = null;
 				if(this.oponente=="p") {
 					pretas--;
 				}else {
 					brancas--;
+				}
+			}else {
+				if(this.turno=="b") {
+					System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
+				}else {
+					System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
 				}
 			}
 			this.posicoes[y][x].setPeca(this.posicoes[i][j].getPeca());
@@ -255,6 +462,9 @@ public class Tabuleiro {
 			oponente = this.oponente;
 			this.oponente = this.turno;
 			this.turno=oponente;
+			return true;
+		}else {
+			return false;
 		}
 	}
 	
@@ -376,7 +586,7 @@ public class Tabuleiro {
 		}
 	}
 	
-	public void moverPreta(int i,int j,int y,int x) {
+	public boolean moverPreta(int i,int j,int y,int x) {
 		//Para arrumar caso jogue após a peça que vai pegar
 		if(x<j) {
 			if(y-i==2 && j-x==2) {
@@ -406,6 +616,7 @@ public class Tabuleiro {
 									if(this.posicoes[i+2][j-2].isOcupado()==false) {
 										this.posicoes[i+2][j-2].setPeca(this.posicoes[i][j].getPeca());
 										this.posicoes[i+2][j-2].setOcupado(true);
+										System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[i+2][j-2].getPos()+" Destruiu: "+this.posicoes[i+1][j-1].getPos());
 										this.posicoes[i+2][j-2].getPeca().setPos_x(j-2);
 										this.posicoes[i+2][j-2].getPeca().setPos_y(i+2);
 										if((i+2)==7) {
@@ -419,7 +630,12 @@ public class Tabuleiro {
 										this.brancas--;
 										this.turno="b";
 										this.oponente="p";
+										return true;
+									}else {
+										return false;
 									}
+								}else {
+									return false;
 								}
 							}else if(x==(j+1)) {
 							//Testa se movimento foi à direita
@@ -428,6 +644,7 @@ public class Tabuleiro {
 									if(this.posicoes[i+2][j+2].isOcupado()==false) {
 										this.posicoes[i+2][j+2].setPeca(this.posicoes[i][j].getPeca());
 										this.posicoes[i+2][j+2].setOcupado(true);
+										System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[i+2][j+2].getPos()+" Destruiu: "+this.posicoes[i+1][j+1].getPos());
 										this.posicoes[i+2][j+2].getPeca().setPos_x(j+2);
 										this.posicoes[i+2][j+2].getPeca().setPos_y(i+2);
 										if((i+2)==7) {
@@ -441,14 +658,25 @@ public class Tabuleiro {
 										this.brancas--;
 										this.turno="b";
 										this.oponente="p";
+										return true;
+									}else {
+										return false;
 									}
+								}else {
+									return false;
 								}
+							}else {
+								return false;
 							}
+						}else {
+							return false;
 						}
+					}else {
+						return false;
 					}
 				}else {
 					//Move a peça para a posição
-					System.out.println("Movimento "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
+					System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
 					this.posicoes[y][x].setPeca(this.posicoes[i][j].getPeca());
 					this.posicoes[y][x].setOcupado(true);
 					this.posicoes[y][x].getPeca().setPos_x(x);
@@ -460,8 +688,13 @@ public class Tabuleiro {
 					this.posicoes[i][j].setOcupado(false);
 					this.turno="b";
 					this.oponente="p";
+					return true;
 				}
+			}else {
+				return false;
 			}
+		}else {
+			return false;
 		}
 	}
 	
@@ -495,6 +728,7 @@ public class Tabuleiro {
 									if(this.posicoes[i-2][j-2].isOcupado()==false) {
 										this.posicoes[i-2][j-2].setPeca(this.posicoes[i][j].getPeca());
 										this.posicoes[i-2][j-2].setOcupado(true);
+										System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[i-2][j-2].getPos()+" Destruiu: "+this.posicoes[i-1][j-1].getPos());
 										if((i-2)==0) {
 											this.posicoes[i-2][j-2].getPeca().setDama(true);
 										}
@@ -513,6 +747,7 @@ public class Tabuleiro {
 								if(j+2<=7) {
 									//Testa se posição acima da peça é ocupada
 									if(this.posicoes[i-2][j+2].isOcupado()==false) {
+										System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[i-2][j+2].getPos()+" Destruiu: "+this.posicoes[i-1][j+1].getPos());
 										this.posicoes[i-2][j+2].setPeca(this.posicoes[i][j].getPeca());
 										this.posicoes[i-2][j+2].setOcupado(true);
 										if((i-2)==0) {
@@ -533,7 +768,7 @@ public class Tabuleiro {
 					}
 				}else {
 					//Move a peça para a posição
-					System.out.println("Movimento "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
+					System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
 					this.posicoes[y][x].setPeca(this.posicoes[i][j].getPeca());
 					this.posicoes[y][x].setOcupado(true);
 					if(y==0) {
@@ -547,4 +782,126 @@ public class Tabuleiro {
 			}
 		}
 	}
+
+	public final Pos getB2() {
+		return b2;
+	}
+
+	public final void setB2(Pos b2) {
+		this.b2 = b2;
+	}
+
+	public final String[] getPos_sup() {
+		return pos_sup;
+	}
+
+	public final void setPos_sup(String[] pos_sup) {
+		this.pos_sup = pos_sup;
+	}
+
+	public final String[] getPos_inf() {
+		return pos_inf;
+	}
+
+	public final void setPos_inf(String[] pos_inf) {
+		this.pos_inf = pos_inf;
+	}
+
+	public final Pos[][] getPosicoes() {
+		return posicoes;
+	}
+
+	public final void setPosicoes(Pos[][] posicoes) {
+		this.posicoes = posicoes;
+	}
+
+	public final int getBrancas() {
+		return brancas;
+	}
+
+	public final void setBrancas(int brancas) {
+		this.brancas = brancas;
+	}
+
+	public final int getPretas() {
+		return pretas;
+	}
+
+	public final void setPretas(int pretas) {
+		this.pretas = pretas;
+	}
+
+	public final String getPosicaoPeca() {
+		return posicaoPeca;
+	}
+
+	public final void setPosicaoPeca(String posicaoPeca) {
+		this.posicaoPeca = posicaoPeca;
+	}
+
+	public final String getPosicaoMovimento() {
+		return posicaoMovimento;
+	}
+
+	public final void setPosicaoMovimento(String posicaoMovimento) {
+		this.posicaoMovimento = posicaoMovimento;
+	}
+
+	public final String getTurno() {
+		return turno;
+	}
+
+	public final void setTurno(String turno) {
+		this.turno = turno;
+	}
+
+	public final String getOponente() {
+		return oponente;
+	}
+
+	public final void setOponente(String oponente) {
+		this.oponente = oponente;
+	}
+
+	public final Pos getPecaMatar() {
+		return pecaMatar;
+	}
+
+	public final void setPecaMatar(Pos pecaMatar) {
+		this.pecaMatar = pecaMatar;
+	}
+
+	public final ArrayList<Peca> getPecasPretas() {
+		return pecasPretas;
+	}
+
+	public final void setPecasPretas(ArrayList<Peca> pecasPretas) {
+		this.pecasPretas = pecasPretas;
+	}
+
+	public final boolean isDesiste() {
+		return desiste;
+	}
+
+	public final void setDesiste(boolean desiste) {
+		this.desiste = desiste;
+	}
+
+	public final String getWinner() {
+		return winner;
+	}
+
+	public final void setWinner(String winner) {
+		this.winner = winner;
+	}
+
+	public final String getLoser() {
+		return loser;
+	}
+
+	public final void setLoser(String loser) {
+		this.loser = loser;
+	}
+	
+	
 }
