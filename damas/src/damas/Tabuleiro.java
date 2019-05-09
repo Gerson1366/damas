@@ -22,24 +22,31 @@ public class Tabuleiro {
 	private String loser;
 	
 	public Tabuleiro() {
+		//Monta matriz
 		for(int x=0;x<8;x++) {
 			for(int i=0;i<8;i++) {
 				String posx = Integer.toString(x+1);
+				//Cria uma nova posição para cada espaço do tabuleiro
 				Pos pos = new Pos();
-				//pos_sup[0] = "a3";
-				//pos_sup[1] = "c3";
-				//pos_inf[0] = "a1";
-				//pos_inf[1] = "c1";
+				//Qual a linha da matrix
 				if(i==0) {
+					//Se a coluna é par ou impar (determina onde vai as peças em cada linha)
 					if(x % 2 == 0) {
+						//Espaço que vai peça
 						Peca peca = new Peca();
+						//Determina a cor da peça
 						peca.setCor("p");
+						//Determina posição da peça
 						peca.setPos_x(x);
 						peca.setPos_y(i);
+						//Posição é ocupada pela peça
 						pos.setOcupado(true);
+						//Coloca peça dentro da posição
 						pos.setPeca(peca);
+						//Adiciona peça na lista para a CPU
 						pecasPretas.add(peca);
 					}else {
+						//Se a posição não recebe peça, marca como não ocupada
 						pos.setOcupado(false);
 					}
 				}else if(i==1) {
@@ -112,14 +119,19 @@ public class Tabuleiro {
 	
 	public void ImprimirTabuleiro() {
 		int i, j;
+		//Imprime legenda do tabuleiro (coluna)
 		System.out.println("  1 2 3 4 5 6 7 8 x");
+		//Monta matriz
 		for (i=0; i < 8; i++) {
+			//Imprime legenda do tabuleiro (linha)
 			System.out.print(converteValor(i) + " ");
 			for (j=0; j < 8; j++) {
+				//Se está desocupado, não imprime nada
 				if(posicoes[i][j].isOcupado()==false) {
 					System.out.print("  ");
 				}else{
 					if(posicoes[i][j].getPeca().isDama()) {
+						//Se a peça é dama, fica caixa alta
 						System.out.print(posicoes[i][j].getPeca().getCor().toUpperCase() + " ");
 					}else {
 						System.out.print(posicoes[i][j].getPeca().getCor() + " ");
@@ -130,6 +142,7 @@ public class Tabuleiro {
 		}
 	}
 	
+	//Converte o valor alfabético para posição da matriz
 	public String converteValor(int valor) {
 		if(valor==0) {
 			return "a";
@@ -152,6 +165,7 @@ public class Tabuleiro {
 		}
 	}
 	
+	//Retorna o alfabeto da posição da matriz
 	public int recuperaValor(char valor) {
 		if(valor=='a') {
 			return 0;
@@ -174,6 +188,7 @@ public class Tabuleiro {
 		}
 	}
 	
+	//Testa se valor é int
 	public static boolean isInteger(String str) { 
 	  try {  
 	    Integer.parseInt(str);  
@@ -183,15 +198,20 @@ public class Tabuleiro {
 	  }  
 	}
 	
+	//Calcula movimento da dama cima/esquerda
 	public boolean moveDamaUpEsq(int y1, int x1,int y2,int x2) {
+		//Acha o último ponto possível do tabuleiro
 		while(x2>0 && y2>0) {
 			y2 = y2-1;
 			x2 = x2-1;
 		}
+		//Testa até chega de volta ao ponto de origem
 		while(x2<x1 && y2<y1) {
+			//Testa se pode movimentar
 			if(this.moverDama(y1,x1,y2,x2)) {
 				return true;
 			}else {
+				//Caso não movimente, volta uma casa
 				y2++;
 				x2++;
 			}
@@ -199,6 +219,7 @@ public class Tabuleiro {
 		return false;
 	}
 	
+	//Calcula movimento da dama cima/direita
 	public boolean moveDamaUpDir(int y1, int x1,int y2,int x2) {
 		while(x2<7 && y2>0) {
 			y2 = y2-1;
@@ -215,6 +236,7 @@ public class Tabuleiro {
 		return false;
 	}
 	
+	//Calcula movimento da dama baixo/direita
 	public boolean moveDamaDownDir(int y1, int x1,int y2,int x2) {
 		while(x2<7 && y2<7) {
 			y2 = y2+1;
@@ -231,6 +253,7 @@ public class Tabuleiro {
 		return false;
 	}
 	
+	//Calcula movimento da dama baixo/esquerda
 	public boolean moveDamaDownEsq(int y1, int x1,int y2,int x2) {
 		while(x2>0 && y2<7) {
 			y2 = y2+1;
@@ -249,18 +272,23 @@ public class Tabuleiro {
 	
 	public void cpuMove() {
 		ArrayList<Peca> listaPecas = new ArrayList<Peca>();
+		//Cria uma cópia da lista de peças para a CPU testar
 		listaPecas = (ArrayList<Peca>) pecasPretas.clone();
 		Random rand = new Random(); 
 		int randInt;
 		int sideInt;
 		boolean move = false;
 		System.out.println("Oponente está pensando...");
+		//Executa até que a lista acabe ou consiga mover
 		while(listaPecas.size()>0 && move==false) {
-			System.out.println("Size: "+listaPecas.size());
+			//Pega um valor aleatório dentro do tamanho da lista para pegar uma peça
 			randInt = rand.nextInt(listaPecas.size());
 			Peca pecaCPU = listaPecas.get(randInt);
+			//Se a peça está viva, tenta a jogada
 			if(pecaCPU.isViva()) {
+				//Se a peça é dama
 				if(pecaCPU.isDama()) {
+					//Se a peça for dama, tem 4 opções de testagens para ela poder andar, evocando as funções definidas acima.
 					sideInt = rand.nextInt(4);
 					int x1 = pecaCPU.getPos_x();
 					int y1 = pecaCPU.getPos_y();
@@ -276,6 +304,7 @@ public class Tabuleiro {
 						}else if(this.moveDamaUpEsq(y1, x1, y2, x2)) {
 							move = true;
 						}else {
+							//Cada vez que qualquer movimento for impossível com aquela peça, remove da lista
 							listaPecas.remove(randInt);
 						}
 					}else if(sideInt==1) {
@@ -316,6 +345,8 @@ public class Tabuleiro {
 						}
 					}
 				}else {
+					//Não sendo dama, sorteia se vai tentar andar primeiro para a esquerda ou direita
+					//Se tanto esquerda quanto direita falharem, tira a peça da lista
 					sideInt = rand.nextInt(2);
 					if(sideInt==0) {
 						int x1 = pecaCPU.getPos_x();
@@ -368,6 +399,7 @@ public class Tabuleiro {
 				listaPecas.remove(randInt);
 			}
 		}
+		//Caso a CPU não consiga mover nenhuma peça após testar todas, ela perde
 		if(move==false) {
 			this.desiste=true;
 			this.winner="b";
