@@ -19,7 +19,10 @@ public class Tabuleiro {
 	private ArrayList<Peca> pecasPretas = new ArrayList<Peca>();
 	private boolean desiste = false;
 	private String winner;
+	public  int count_winnerb=0;
 	private String loser;
+	
+	
 	
 	public Tabuleiro() {
 		//Monta matriz
@@ -347,6 +350,7 @@ public class Tabuleiro {
 				}else {
 					//Não sendo dama, sorteia se vai tentar andar primeiro para a esquerda ou direita
 					//Se tanto esquerda quanto direita falharem, tira a peça da lista
+					
 					sideInt = rand.nextInt(2);
 					if(sideInt==0) {
 						int x1 = pecaCPU.getPos_x();
@@ -403,19 +407,26 @@ public class Tabuleiro {
 		if(move==false) {
 			this.desiste=true;
 			this.winner="b";
+			count_winnerb ++;
 			this.loser="p";
+			
 		}
 	}
 	
 	public void moverPeca() {
 		Scanner scanner = new Scanner(System.in);
 		if(this.turno=="b") {
-			System.out.println("Qual peça branca deseja mover?(yx)");
+			System.out.println("Qual peça branca deseja mover?(yx)( 00 para desistir!):");
 		}else if(this.turno=="p") {
-			System.out.println("Qual peça preta deseja mover?(yx)");
+			System.out.println("Qual peça preta deseja mover?(yx)( 00 para desistir!):");
 		}
 		posicaoPeca = scanner.nextLine();
-		if(posicaoPeca.length()>1) {
+		if(posicaoPeca.equals("00")){
+			this.desiste=true;
+			this.winner=this.oponente;
+			this.loser=this.turno;
+			
+			}else{
 			//Pega valor da String e separa primeiro valor do segundo, convertendo cada valor para int
 			int i = this.recuperaValor(posicaoPeca.charAt(0));
 			if(this.isInteger(String.valueOf(posicaoPeca.charAt(1)))){
