@@ -1,9 +1,19 @@
 package damas;
 
-public class Pos {
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.event.*;
+import java.awt.geom.Rectangle2D;
+
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.event.MouseInputListener;
+
+public class Pos{
 	public String pos;
-	private Pos pos_sup[];
-	private Pos pos_inf[];
 	private boolean ocupado;
 	private Peca peca;
 	
@@ -12,18 +22,6 @@ public class Pos {
 	}
 	public void setPos(String pos) {
 		this.pos = pos;
-	}
-	public Pos[] getPos_sup() {
-		return pos_sup;
-	}
-	public void setPos_sup(Pos[] pos_sup) {
-		this.pos_sup = pos_sup;
-	}
-	public Pos[] getPos_inf() {
-		return pos_inf;
-	}
-	public void setPos_inf(Pos[] pos_inf) {
-		this.pos_inf = pos_inf;
 	}
 	public boolean isOcupado() {
 		return ocupado;
@@ -44,3 +42,5 @@ public class Pos {
 	//	this.pos_sup[1] = post_sup[1];
 	//}
 }
+
+

@@ -3,7 +3,19 @@ package damas;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
-public class Tabuleiro {
+
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+public class Tabuleiro extends JPanel{
 	
 	private Pos b2;
 	private String pos_sup[];
@@ -19,106 +31,119 @@ public class Tabuleiro {
 	private ArrayList<Peca> pecasPretas = new ArrayList<Peca>();
 	private boolean desiste = false;
 	private String winner;
-	public  int count_winnerb=0;
 	private String loser;
-	
-	
-	
-	public Tabuleiro() {
-		//Monta matriz
-		for(int x=0;x<8;x++) {
-			for(int i=0;i<8;i++) {
-				String posx = Integer.toString(x+1);
-				//Cria uma nova posição para cada espaço do tabuleiro
-				Pos pos = new Pos();
-				//Qual a linha da matrix
-				if(i==0) {
-					//Se a coluna é par ou impar (determina onde vai as peças em cada linha)
-					if(x % 2 == 0) {
-						//Espaço que vai peça
-						Peca peca = new Peca();
-						//Determina a cor da peça
-						peca.setCor("p");
-						//Determina posição da peça
-						peca.setPos_x(x);
-						peca.setPos_y(i);
-						//Posição é ocupada pela peça
-						pos.setOcupado(true);
-						//Coloca peça dentro da posição
-						pos.setPeca(peca);
-						//Adiciona peça na lista para a CPU
-						pecasPretas.add(peca);
-					}else {
-						//Se a posição não recebe peça, marca como não ocupada
-						pos.setOcupado(false);
-					}
-				}else if(i==1) {
-					if(x % 2 != 0) {
-						Peca peca = new Peca();
-						peca.setCor("p");
-						peca.setPos_x(x);
-						peca.setPos_y(i);
-						pos.setOcupado(true);
-						pos.setPeca(peca);
-						pecasPretas.add(peca);
-					}else {
-						pos.setOcupado(false);
-					}
-				}else if(i==2) {
-					if(x % 2 == 0) {
-						Peca peca = new Peca();
-						peca.setCor("p");
-						peca.setPos_x(x);
-						peca.setPos_y(i);
-						pos.setOcupado(true);
-						pos.setPeca(peca);
-						pecasPretas.add(peca);
-					}else {
-						pos.setOcupado(false);
-					}
-				}
-				else if(i==5) {
-					if(x % 2 != 0) {
-						Peca peca = new Peca();
-						peca.setCor("b");
-						peca.setPos_x(x);
-						peca.setPos_y(i);
-						pos.setOcupado(true);
-						pos.setPeca(peca);
-					}else {
-						pos.setOcupado(false);
-					}
-				}
-				else if(i==6) {
-					if(x % 2 == 0) {
-						Peca peca = new Peca();
-						peca.setCor("b");
-						peca.setPos_x(x);
-						peca.setPos_y(i);
-						pos.setOcupado(true);
-						pos.setPeca(peca);
-					}else {
-						pos.setOcupado(false);
-					}
-				}else if(i==7) {
-					if(x % 2 != 0) {
-						Peca peca = new Peca();
-						peca.setCor("b");
-						peca.setPos_x(x);
-						peca.setPos_y(i);
-						pos.setOcupado(true);
-						pos.setPeca(peca);
-					}else {
-						pos.setOcupado(false);
-					}
-				}else {
-					pos.setOcupado(false);
-				}
-				pos.setPos(converteValor(i)+posx);
-				posicoes[i][x]=pos;
-			}
-		}
+	private Peca pecaSelect;
+
+    
+
+	public final Peca getPecaSelect() {
+		return pecaSelect;
 	}
+
+
+
+	public final void setPecaSelect(Peca pecaSelect) {
+		this.pecaSelect = pecaSelect;
+	}
+
+
+
+	public Tabuleiro() {
+  		for(int x=0;x<8;x++) {
+  			for(int i=0;i<8;i++) {
+  				String posx = Integer.toString(x+1);
+  				//Cria uma nova posição para cada espaço do tabuleiro
+  				Pos pos = new Pos();
+  				//Qual a linha da matrix
+  				if(i==0) {
+  					//Se a coluna é par ou impar (determina onde vai as peças em cada linha)
+  					if(x % 2 == 0) {
+  						//Espaço que vai peça
+  						Peca peca = new Peca();
+  						//Determina a cor da peça
+  						peca.setCor("p");
+  						//Determina posição da peça
+  						peca.setPos_x(x);
+  						peca.setPos_y(i);
+  						//Posição é ocupada pela peça
+  						pos.setOcupado(true);
+  						//Coloca peça dentro da posição
+  						pos.setPeca(peca);
+  						//Adiciona peça na lista para a CPU
+  						pecasPretas.add(peca);
+  					}else {
+  						//Se a posição não recebe peça, marca como não ocupada
+  						pos.setOcupado(false);
+  					}
+  				}else if(i==1) {
+  					if(x % 2 != 0) {
+  						Peca peca = new Peca();
+  						peca.setCor("p");
+  						peca.setPos_x(x);
+  						peca.setPos_y(i);
+  						pos.setOcupado(true);
+  						pos.setPeca(peca);
+  						pecasPretas.add(peca);
+  					}else {
+  						pos.setOcupado(false);
+  					}
+  				}else if(i==2) {
+  					if(x % 2 == 0) {
+  						Peca peca = new Peca();
+  						peca.setCor("p");
+  						peca.setPos_x(x);
+  						peca.setPos_y(i);
+  						pos.setOcupado(true);
+  						pos.setPeca(peca);
+  						pecasPretas.add(peca);
+  					}else {
+  						pos.setOcupado(false);
+  					}
+  				}
+  				else if(i==5) {
+  					if(x % 2 != 0) {
+  						Peca peca = new Peca();
+  						peca.setCor("b");
+  						peca.setPos_x(x);
+  						peca.setPos_y(i);
+  						pos.setOcupado(true);
+  						pos.setPeca(peca);
+  					}else {
+  						pos.setOcupado(false);
+  					}
+  				}
+  				else if(i==6) {
+  					if(x % 2 == 0) {
+  						Peca peca = new Peca();
+  						peca.setCor("b");
+  						peca.setPos_x(x);
+  						peca.setPos_y(i);
+  						pos.setOcupado(true);
+  						pos.setPeca(peca);
+  					}else {
+  						pos.setOcupado(false);
+  					}
+  				}else if(i==7) {
+  					if(x % 2 != 0) {
+  						Peca peca = new Peca();
+  						peca.setCor("b");
+  						peca.setPos_x(x);
+  						peca.setPos_y(i);
+  						pos.setOcupado(true);
+  						pos.setPeca(peca);
+  					}else {
+  						pos.setOcupado(false);
+  					}
+  				}else {
+  					pos.setOcupado(false);
+  				}
+  				pos.setPos(converteValor(i)+posx);
+  				posicoes[i][x]=pos;
+  			}
+  		}
+	}
+	
+	
 	
 	public void ImprimirTabuleiro() {
 		int i, j;
@@ -281,7 +306,7 @@ public class Tabuleiro {
 		int randInt;
 		int sideInt;
 		boolean move = false;
-		System.out.println("Oponente está pensando...");
+		//System.out.println("Oponente está pensando...");
 		//Executa até que a lista acabe ou consiga mover
 		while(listaPecas.size()>0 && move==false) {
 			//Pega um valor aleatório dentro do tamanho da lista para pegar uma peça
@@ -407,9 +432,7 @@ public class Tabuleiro {
 		if(move==false) {
 			this.desiste=true;
 			this.winner="b";
-			count_winnerb ++;
 			this.loser="p";
-			
 		}
 	}
 	
@@ -479,9 +502,9 @@ public class Tabuleiro {
 				this.pecaMatar.setPeca(null);
 				this.pecaMatar.setOcupado(false);
 				if(this.turno=="b") {
-					System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos()+" Destruiu: "+this.pecaMatar.getPos());
+					//System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos()+" Destruiu: "+this.pecaMatar.getPos());
 				}else {
-					System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos()+" Destruiu: "+this.pecaMatar.getPos());
+					//System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos()+" Destruiu: "+this.pecaMatar.getPos());
 				}
 				this.pecaMatar = null;
 				if(this.oponente=="p") {
@@ -491,9 +514,9 @@ public class Tabuleiro {
 				}
 			}else {
 				if(this.turno=="b") {
-					System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
+					//System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
 				}else {
-					System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
+					//System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
 				}
 			}
 			this.posicoes[y][x].setPeca(this.posicoes[i][j].getPeca());
@@ -507,6 +530,7 @@ public class Tabuleiro {
 			this.turno=oponente;
 			return true;
 		}else {
+			this.pecaMatar = null;
 			return false;
 		}
 	}
@@ -659,7 +683,7 @@ public class Tabuleiro {
 									if(this.posicoes[i+2][j-2].isOcupado()==false) {
 										this.posicoes[i+2][j-2].setPeca(this.posicoes[i][j].getPeca());
 										this.posicoes[i+2][j-2].setOcupado(true);
-										System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[i+2][j-2].getPos()+" Destruiu: "+this.posicoes[i+1][j-1].getPos());
+										//System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[i+2][j-2].getPos()+" Destruiu: "+this.posicoes[i+1][j-1].getPos());
 										this.posicoes[i+2][j-2].getPeca().setPos_x(j-2);
 										this.posicoes[i+2][j-2].getPeca().setPos_y(i+2);
 										if((i+2)==7) {
@@ -687,7 +711,7 @@ public class Tabuleiro {
 									if(this.posicoes[i+2][j+2].isOcupado()==false) {
 										this.posicoes[i+2][j+2].setPeca(this.posicoes[i][j].getPeca());
 										this.posicoes[i+2][j+2].setOcupado(true);
-										System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[i+2][j+2].getPos()+" Destruiu: "+this.posicoes[i+1][j+1].getPos());
+										//System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[i+2][j+2].getPos()+" Destruiu: "+this.posicoes[i+1][j+1].getPos());
 										this.posicoes[i+2][j+2].getPeca().setPos_x(j+2);
 										this.posicoes[i+2][j+2].getPeca().setPos_y(i+2);
 										if((i+2)==7) {
@@ -719,7 +743,7 @@ public class Tabuleiro {
 					}
 				}else {
 					//Move a peça para a posição
-					System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
+					//System.out.println("Preta: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
 					this.posicoes[y][x].setPeca(this.posicoes[i][j].getPeca());
 					this.posicoes[y][x].setOcupado(true);
 					this.posicoes[y][x].getPeca().setPos_x(x);
@@ -741,7 +765,7 @@ public class Tabuleiro {
 		}
 	}
 	
-	public void moverBranca(int i,int j,int y,int x) {
+	public boolean moverBranca(int i,int j,int y,int x) {
 		//Para arrumar caso jogue após a peça que vai pegar
 		if(x<j) {
 			if(i-y==2 && j-x==2) {
@@ -771,7 +795,7 @@ public class Tabuleiro {
 									if(this.posicoes[i-2][j-2].isOcupado()==false) {
 										this.posicoes[i-2][j-2].setPeca(this.posicoes[i][j].getPeca());
 										this.posicoes[i-2][j-2].setOcupado(true);
-										System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[i-2][j-2].getPos()+" Destruiu: "+this.posicoes[i-1][j-1].getPos());
+										//System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[i-2][j-2].getPos()+" Destruiu: "+this.posicoes[i-1][j-1].getPos());
 										if((i-2)==0) {
 											this.posicoes[i-2][j-2].getPeca().setDama(true);
 										}
@@ -783,14 +807,19 @@ public class Tabuleiro {
 										this.pretas--;
 										this.turno="p";
 										this.oponente="b";
+										return true;
+									}else {
+										return false;
 									}
+								}else {
+									return false;
 								}
 							}else if(x==(j+1)) {
 							//Testa se movimento foi à direita
 								if(j+2<=7) {
 									//Testa se posição acima da peça é ocupada
 									if(this.posicoes[i-2][j+2].isOcupado()==false) {
-										System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[i-2][j+2].getPos()+" Destruiu: "+this.posicoes[i-1][j+1].getPos());
+										//System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[i-2][j+2].getPos()+" Destruiu: "+this.posicoes[i-1][j+1].getPos());
 										this.posicoes[i-2][j+2].setPeca(this.posicoes[i][j].getPeca());
 										this.posicoes[i-2][j+2].setOcupado(true);
 										if((i-2)==0) {
@@ -804,14 +833,25 @@ public class Tabuleiro {
 										this.pretas--;
 										this.turno="p";
 										this.oponente="b";
+										return true;
+									}else {
+										return false;
 									}
+								}else {
+									return false;
 								}
+							}else {
+								return false;
 							}
+						}else {
+							return false;
 						}
+					}else {
+						return false;
 					}
 				}else {
 					//Move a peça para a posição
-					System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
+					//System.out.println("Branca: "+this.posicoes[i][j].getPos()+" para "+this.posicoes[y][x].getPos());
 					this.posicoes[y][x].setPeca(this.posicoes[i][j].getPeca());
 					this.posicoes[y][x].setOcupado(true);
 					if(y==0) {
@@ -821,8 +861,13 @@ public class Tabuleiro {
 					this.posicoes[i][j].setOcupado(false);
 					this.turno="p";
 					this.oponente="b";
+					return true;
 				}
+			}else {
+				return false;
 			}
+		}else {
+			return false;
 		}
 	}
 
@@ -946,5 +991,41 @@ public class Tabuleiro {
 		this.loser = loser;
 	}
 	
-	
+	class mouseTab implements MouseListener{
+
+		@Override
+		public void mouseClicked(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			System.out.println("Pos x: "+arg0.getX());
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		
+
+		
+		
+	}
 }

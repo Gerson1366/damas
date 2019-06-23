@@ -1,12 +1,21 @@
 package damas;
 
-public class Peca {
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.MouseListener;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+
+public class Peca extends JPanel {
 	private String pos_atual;
 	private String cor;
 	private boolean viva = true;
 	private boolean dama = false;
 	private int pos_x;
 	private int pos_y;
+	
 	
 	
 	public int getPos_x() {

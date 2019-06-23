@@ -1,26 +1,29 @@
 package damas;
 import java.util.Scanner;
 
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.event.*;
+
 public class Main {
+	
 
 	public static void main(String[] args) {
 		int jogadores;
-		Scanner scanner = new Scanner(System.in);
-		
-		
-	
-		char opcao = 's';
-		while(opcao == 's') {
-		do {
-			System.out.println("Declare o número de jogadores (1 ou 2): ");
-			jogadores = scanner.nextInt();
-		}while(jogadores!=1 && jogadores!=2);
-		Tabuleiro tab = new Tabuleiro();
-		do {
+		int vitoriasBrancas = 0;
+		int vitoriasPretas = 0;
+		JFrame f = new JFrame("Tela Damas");
+		TabuleiroGraphic tabGraphic = new TabuleiroGraphic();
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        f.add(tabGraphic);
+        f.pack();
+        f.setVisible(true);
+		//createWindow(tab);
+		/*do {
 			//Imprimi o tabuleiro
-			tab.ImprimirTabuleiro();
+			//tab.ImprimirTabuleiro();
 			//Caso seja um jogador, a CPU controla as pretas
-			if(jogadores==1 && tab.getTurno()=="p") {
+			/*if(jogadores==1 && tab.getTurno()=="p") {
 				tab.cpuMove();
 				
 			}else {
@@ -29,15 +32,28 @@ public class Main {
 		}while(tab.getBrancas()>0 && tab.getPretas()>0 && !tab.isDesiste());
 		
 		
-		if(tab.getBrancas()== 0 || !tab.isDesiste()) {
-			System.out.println("CPU GANHOU! TOTAL DE: " +tab.count_winnerb +1 );
-		}else if(tab.getPretas()== 0 && tab.isDesiste()){
-			System.out.println("PLAYER GANHOU, TOTAL DE:  "+tab.count_winnerb +1);
+		if(tab.isDesiste()) {
+			if(tab.getWinner()=="b") {
+				System.out.println("Vitória Brancas restando "+tab.getBrancas()+" peças.");
+				vitoriasBrancas++;
+			}else {
+				System.out.println("Vitória Pretas restando "+tab.getPretas()+" peças.");
+				vitoriasPretas++;
+			}
+		}else{
+			if(tab.getBrancas()<tab.getPretas()) {
+				System.out.println("Vitória Pretas restando "+tab.getPretas()+" peças.");
+				vitoriasPretas++;
+			}else {
+				System.out.println("Vitória Brancas restando "+tab.getBrancas()+" peças.");
+				vitoriasBrancas++;
+			}
+			
 		}
 		
 		
 		//Imprime tabuleiro final
-		tab.ImprimirTabuleiro();
+		//tab.ImprimirTabuleiro();
 		System.out.println("Fim");
 		
 		System.out.println("Jogar Novamente? (s)sim ");
@@ -48,5 +64,20 @@ public class Main {
 
 		
 	   }	
+	   if(vitoriasBrancas>vitoriasPretas) {
+		   System.out.println("Brancas venceram com "+vitoriasBrancas+" vitórias.");
+	   }else {
+		   System.out.println("Pretas venceram com "+vitoriasPretas+" vitórias.");
+	   }*/
 	}
+	
+	public static void createWindow(Tabuleiro tab)
+    {
+		
+		JPanel newPanel = new JPanel();
+       // f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        newPanel.add(tab);
+         
+    }
+	
 }
