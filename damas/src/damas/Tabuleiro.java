@@ -309,11 +309,14 @@ public class Tabuleiro extends JPanel{
 		//System.out.println("Oponente está pensando...");
 		//Executa até que a lista acabe ou consiga mover
 		while(listaPecas.size()>0 && move==false) {
+			//System.out.println(listaPecas.size());
 			//Pega um valor aleatório dentro do tamanho da lista para pegar uma peça
 			randInt = rand.nextInt(listaPecas.size());
+			//System.out.println("RandInt: "+randInt);
 			Peca pecaCPU = listaPecas.get(randInt);
 			//Se a peça está viva, tenta a jogada
 			if(pecaCPU.isViva()) {
+				//System.out.println("Está viva!");
 				//Se a peça é dama
 				if(pecaCPU.isDama()) {
 					//Se a peça for dama, tem 4 opções de testagens para ela poder andar, evocando as funções definidas acima.
@@ -383,19 +386,27 @@ public class Tabuleiro extends JPanel{
 						int y1 = pecaCPU.getPos_y();
 						int y2 = y1+1;
 						if((x2>=0 && x2<=7)&& (y2>=0 && y2<=7)) {
+							//System.out.println("Dentro tabuleiro");
 							if(this.moverPreta(y1,x1,y2,x2)) {
+								//System.out.println("Pode mover 1!");
 								move=true;
 							}else {
 								x1 = pecaCPU.getPos_x();
 								x2 = x1+1;
 								y1 = pecaCPU.getPos_y();
 								y2 = y1+1;
+								//System.out.println("x="+x2+",y="+y2);
 								if((x2>=0 && x2<=7)&& (y2>=0 && y2<=7)) {
+									//System.out.println("Dentro tabuleiro 2");
 									if(this.moverPreta(y1, x1, y2, x2)) {
+										//System.out.println("Pode mover 2!");
 										move=true;
 									}else {
+										//System.out.println("Removeu");
 										listaPecas.remove(randInt);
 									}
+								}else {
+									listaPecas.remove(randInt);
 								}
 							}
 						}
@@ -405,20 +416,28 @@ public class Tabuleiro extends JPanel{
 						int y1 = pecaCPU.getPos_y();
 						int y2 = y1+1;
 						if((x2>=0 && x2<=7)&& (y2>=0 && y2<=7)) {
+							//System.out.println("Dentro tabuleiro");
 							if(this.moverPreta(y1, x1, y2, x2)) {
+								//System.out.println("Pode mover 1!");
 								move=true;
 							}else {
 								x1 = pecaCPU.getPos_x();
 								x2 = x1-1;
 								y1 = pecaCPU.getPos_y();
 								y2 = y1+1;
+								//System.out.println("x="+x2+",y="+y2);
 								//Testa se valor está dentro do tabuleiro
 								if((x2>=0 && x2<=7)&& (y2>=0 && y2<=7)) {
+									//System.out.println("Dentro tabuleiro 2");
 									if(this.moverPreta(y1, x1, y2, x2)) {
+										//System.out.println("Pode mover 2!");
 										move=true;
 									}else {
+										//System.out.println("Removeu");
 										listaPecas.remove(randInt);
 									}
+								}else {
+									listaPecas.remove(randInt);
 								}
 							}
 						}
@@ -430,10 +449,12 @@ public class Tabuleiro extends JPanel{
 		}
 		//Caso a CPU não consiga mover nenhuma peça após testar todas, ela perde
 		if(move==false) {
+			//System.out.println("Entrou");
 			this.desiste=true;
 			this.winner="b";
 			this.loser="p";
 		}
+		//System.out.println("Moveu: "+move);
 	}
 	
 	public void moverPeca() {

@@ -1,13 +1,18 @@
 package damas;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -17,6 +22,10 @@ public class TabuleiroGraphic extends JPanel{
 	int x_ini,y_ini,x_fim,y_fim;
 	boolean cpu=false;
 	String jogadores=null;
+	int vitoriasBrancas=0;
+	int vitoriasPretas=0;
+	JButton b=null;
+	JLabel messageTurn=null;
     
     public TabuleiroGraphic(){
     	tab = new Tabuleiro();
@@ -28,14 +37,22 @@ public class TabuleiroGraphic extends JPanel{
     	if(jogadores.equals("1")) {
     		this.cpu=true;
     	}
+    	b=new JButton("Desistir");  
+    	messageTurn = new JLabel();
+    	messageTurn.setText("Turno: Brancas");
+    	add(messageTurn);
+        add(b);  
     	repaint();
+    	b.addActionListener(new clicarBotao());
     }
 	
 	public Dimension getPreferredSize() {
-        return new Dimension(480,480);
+        return new Dimension(480,600);
     }
 
     public void paintComponent(Graphics g) {
+		b.setBounds(200,540,95,30);  
+		messageTurn.setBounds(200,450,100,100);
 	    super.paintComponent(g); 
 	    int posx = 0;
 	    int posy = 0;
@@ -475,69 +492,161 @@ public class TabuleiroGraphic extends JPanel{
 		}
 	}
     
+    class clicarBotao implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			if(tab.getTurno()=="b") {
+				tab.setDesiste(true);
+				tab.setWinner("p");
+				tab.setLoser("b");
+			}else {
+				if(cpu==false) {
+					tab.setDesiste(true);
+					tab.setWinner("b");
+					tab.setLoser("p");
+				}
+			}
+			if(tab.isDesiste()) {
+				Object[] options = { "Sim", "Não" };
+				if(tab.getWinner()=="b") {
+					int op = JOptionPane.showOptionDialog(null, "Vitória Brancas restando "+tab.getBrancas()+" peças. Jogar Novamente?", "Informação", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+					vitoriasBrancas++;
+					if(op==0) {
+						tab = new Tabuleiro();
+						repaint();
+					}else {
+						if(vitoriasBrancas>vitoriasPretas) {
+							JOptionPane.showMessageDialog(null,"Brancas venceram com "+vitoriasBrancas+" vitórias.");
+					   }else {
+						   JOptionPane.showMessageDialog(null,"Pretas venceram com "+vitoriasPretas+" vitórias.");
+					   }
+					}
+				}else {
+					int op = JOptionPane.showOptionDialog(null, "Vitória Pretas restando "+tab.getPretas()+" peças. Jogar Novamente?", "Informação", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+					vitoriasPretas++;
+					if(op==0) {
+						tab = new Tabuleiro();
+						repaint();
+					}else {
+						if(vitoriasBrancas>vitoriasPretas) {
+							JOptionPane.showMessageDialog(null,"Brancas venceram com "+vitoriasBrancas+" vitórias.");
+					   }else {
+						   JOptionPane.showMessageDialog(null,"Pretas venceram com "+vitoriasPretas+" vitórias.");
+					   }
+					}
+				}
+			}
+		}
+    	
+    }
+    
     class clicarTab implements MouseListener{
 
 		@Override
 		public void mouseClicked(MouseEvent arg0) {
-			// TODO Auto-generated method stub
-			if(tab.getPecaSelect()==null) {
-				int x = Math.round(arg0.getX()/60);
-				int y = Math.round(arg0.getY()/60);
-				if(tab.getPosicoes()[y][x].isOcupado()) {
-					if(tab.getPosicoes()[y][x].getPeca().getCor()==tab.getTurno()) {
-						tab.setPecaSelect(tab.getPosicoes()[y][x].getPeca());
-						x_ini=x;
-						y_ini=y;
-					}
-				}
-			}else {
-				int x = Math.round(arg0.getX()/60);
-				int y = Math.round(arg0.getY()/60);
-				x_fim=x;
-				y_fim=y;
-				if(tab.getTurno()=="b") {
-					if(tab.getPecaSelect().isDama()) {
-						if(tab.moverDama(y_ini,x_ini,y_fim,x_fim)) {
-							tab.setPecaSelect(null);
-							if(cpu==true) {
-								tab.cpuMove();
-							}else {
-								tab.setTurno("p");
-							}
-						}else {
-							tab.setPecaSelect(null);
-						}
-					}else {
-						if(tab.moverBranca(y_ini, x_ini, y_fim, x_fim)){
-							tab.setPecaSelect(null);
-							if(cpu==true) {	
-								tab.cpuMove();
-							}else {
-								tab.setTurno("p");
-							}
-						}else {
-							tab.setPecaSelect(null);
+			if(arg0.getY()<=480 && arg0.getX()<=480) {
+				// TODO Auto-generated method stub
+				if(tab.getPecaSelect()==null) {
+					int x = Math.round(arg0.getX()/60);
+					int y = Math.round(arg0.getY()/60);
+					if(tab.getPosicoes()[y][x].isOcupado()) {
+						if(tab.getPosicoes()[y][x].getPeca().getCor()==tab.getTurno()) {
+							tab.setPecaSelect(tab.getPosicoes()[y][x].getPeca());
+							x_ini=x;
+							y_ini=y;
 						}
 					}
 				}else {
-					if(tab.getPecaSelect().isDama()) {
-						if(tab.moverDama(y_ini,x_ini,y_fim,x_fim)) {
-							tab.setPecaSelect(null);
-							tab.setTurno("b");
+					int x = Math.round(arg0.getX()/60);
+					int y = Math.round(arg0.getY()/60);
+					x_fim=x;
+					y_fim=y;
+					if(tab.getTurno()=="b") {
+						if(tab.getPecaSelect().isDama()) {
+							if(tab.moverDama(y_ini,x_ini,y_fim,x_fim)) {
+								messageTurn.setText("Turno: Pretas");
+								tab.setPecaSelect(null);
+								repaint();
+								if(cpu==true) {
+									tab.cpuMove();
+									messageTurn.setText("Turno: Brancas");
+								}else {
+									tab.setTurno("p");
+									messageTurn.setText("Turno: Pretas");
+								}
+							}else {
+								tab.setPecaSelect(null);
+							}
 						}else {
-							tab.setPecaSelect(null);
+							if(tab.moverBranca(y_ini, x_ini, y_fim, x_fim)){
+								messageTurn.setText("Turno: Pretas");
+								tab.setPecaSelect(null);
+								repaint();
+								if(cpu==true) {	
+									tab.cpuMove();
+									messageTurn.setText("Turno: Brancas");
+								}else {
+									tab.setTurno("p");
+									messageTurn.setText("Turno: Pretas");
+								}
+							}else {
+								tab.setPecaSelect(null);
+							}
 						}
 					}else {
-						if(tab.moverPreta(y_ini, x_ini, y_fim, x_fim)){
-							tab.setPecaSelect(null);
-							tab.setTurno("b");
+						if(tab.getPecaSelect().isDama()) {
+							if(tab.moverDama(y_ini,x_ini,y_fim,x_fim)) {
+								tab.setPecaSelect(null);
+								tab.setTurno("b");
+								messageTurn.setText("Turno: Brancas");
+							}else {
+								tab.setPecaSelect(null);
+							}
 						}else {
-							tab.setPecaSelect(null);
+							if(tab.moverPreta(y_ini, x_ini, y_fim, x_fim)){
+								tab.setPecaSelect(null);
+								tab.setTurno("b");
+								messageTurn.setText("Turno: Brancas");
+							}else {
+								tab.setPecaSelect(null);
+							}
+						}
+					}
+				}
+				repaint();
+				if(tab.getBrancas()<=0 || tab.getPretas()<=0 || tab.isDesiste()) {
+					Object[] options = { "Sim", "Não" };
+					if(tab.getWinner()=="b") {
+						int op = JOptionPane.showOptionDialog(null, "Vitória Brancas restando "+tab.getBrancas()+" peças. Jogar Novamente?", "Informação", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+						vitoriasBrancas++;
+						if(op==0) {
+							tab = new Tabuleiro();
+							repaint();
+						}else {
+							if(vitoriasBrancas>vitoriasPretas) {
+								JOptionPane.showMessageDialog(null,"Brancas venceram com "+vitoriasBrancas+" vitórias.");
+						   }else {
+							   JOptionPane.showMessageDialog(null,"Pretas venceram com "+vitoriasPretas+" vitórias.");
+						   }
+						}
+					}else {
+						int op = JOptionPane.showOptionDialog(null, "Vitória Pretas restando "+tab.getPretas()+" peças. Jogar Novamente?", "Informação", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+						vitoriasPretas++;
+						if(op==0) {
+							tab = new Tabuleiro();
+							repaint();
+						}else {
+							if(vitoriasBrancas>vitoriasPretas) {
+								JOptionPane.showMessageDialog(null,"Brancas venceram com "+vitoriasBrancas+" vitórias.");
+						   }else {
+							   JOptionPane.showMessageDialog(null,"Pretas venceram com "+vitoriasPretas+" vitórias.");
+						   }
 						}
 					}
 				}
 			}
-			repaint();
 		}
 
 		@Override
